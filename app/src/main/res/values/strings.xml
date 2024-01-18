@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">TestList</string>
+    <string name="error_title">Не удалось загрузить данные</string>
+    <string name="update_button_text">Обновить</string>
 </resources>

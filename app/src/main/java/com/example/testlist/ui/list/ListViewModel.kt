@@ -33,8 +33,8 @@ class ListViewModel(private val networkRepository: NetworkRepository) : ViewMode
     }
 
     private fun getData() {
-        updateLoaders(1)
         viewModelScope.launch {
+            updateLoaders(1)
             when (val r = networkRepository.getAnnouncements()) {
                 is Right -> {
                     _uiState.update { state -> state.copy(announcements = r.v) }
@@ -45,8 +45,8 @@ class ListViewModel(private val networkRepository: NetworkRepository) : ViewMode
                     changeErrorState(true)
                 }
             }
+            updateLoaders(-1)
         }
-        updateLoaders(-1)
     }
 
     private fun updateLoaders(value: Int) {
@@ -54,7 +54,7 @@ class ListViewModel(private val networkRepository: NetworkRepository) : ViewMode
     }
 
     private fun changeErrorState(value: Boolean) {
-        _uiState.update { state -> state.copy(error = value) }
+        viewModelScope.launch { _uiState.update { state -> state.copy(error = value) } }
     }
 
 }
