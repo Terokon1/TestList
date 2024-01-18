@@ -1,6 +1,7 @@
 package com.example.testlist.ui.list
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -15,13 +16,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -29,35 +27,29 @@ import androidx.compose.ui.unit.sp
 import com.example.testlist.R
 import com.example.testlist.data.Announcement
 import com.example.testlist.ui.common.LoadableContainer
+import com.example.testlist.utils.extensions.formatStandard
 import org.koin.androidx.compose.koinViewModel
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun ListScreen(vm: ListViewModel = koinViewModel()) {
     val uiState by vm.uiState.collectAsState()
     val listState = rememberLazyListState()
-    val emptyListHeight by remember {
-        derivedStateOf {
-            listState.layoutInfo.viewportSize.height
-        }
-    }
-    val density = LocalDensity.current
 
     LoadableContainer(modifier = Modifier.fillMaxSize(), isLoading = uiState.loaders > 0) {
         LazyColumn(
             state = listState,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier.fillMaxSize()
         ) {
             if (uiState.error && uiState.loaders == 0)
                 item {
                     ErrorItem(
-                        modifier = Modifier.height(with(density) { emptyListHeight.coerceAtLeast(0).toDp() })
+                        modifier = Modifier.fillParentMaxHeight()
                     ) {
                         vm.update()
                     }
                 }
             items(uiState.announcements) {
-                Spacer(modifier = Modifier.height(8.dp))
                 AnnouncementItem(announcement = it)
                 Box(
                     modifier = Modifier
@@ -65,7 +57,6 @@ fun ListScreen(vm: ListViewModel = koinViewModel()) {
                         .height(2.dp)
                         .background(Color.Gray)
                 )
-
             }
         }
     }
@@ -83,22 +74,28 @@ fun AnnouncementItem(announcement: Announcement) {
         Spacer(modifier = Modifier.height(4.dp))
         Text(text = announcement.description, fontSize = 14.sp)
         Spacer(modifier = Modifier.height(8.dp))
-        Column(
+        Text(
+            text = stringResource(R.string.tags_text) + announcement.tags.joinToString(", "),
+            fontSize = 12.sp,
             modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(text = stringResource(R.string.tags_text) + announcement.tags.joinToString(", "), fontSize = 12.sp, modifier = Modifier.fillMaxWidth())
-            Text(
-                text = announcement.dateTimestamp.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")),
-                modifier = Modifier.align(Alignment.End)
-            )
-        }
+        )
+        Text(
+            text = announcement.date.formatStandard(),
+            modifier = Modifier.align(Alignment.End)
+        )
     }
 }
 
 @Composable
 fun ErrorItem(modifier: Modifier = Modifier, refreshButton: () -> Unit) {
-    Box(contentAlignment = Alignment.Center, modifier = modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier.fillMaxSize()
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(text = stringResource(R.string.error_title))
             Spacer(modifier = Modifier.height(8.dp))
             Button(onClick = { refreshButton() }) {

@@ -3,17 +3,17 @@ package com.example.testlist.data.network.models
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Response(
+data class AnnouncementResponse(
     val result: ResultResponse,
 ) {
     @Serializable
     data class ResultResponse(
-        val list: List<AnnouncementResponse>,
+        val list: List<ItemResponse>,
         val total: Int
     )
 
     @Serializable
-    data class AnnouncementResponse(
+    data class ItemResponse(
         val dateTimestamp: Long,
         val description: String,
         val endDateTimestamp: Long,

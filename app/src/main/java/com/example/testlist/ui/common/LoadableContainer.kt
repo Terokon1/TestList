@@ -21,7 +21,12 @@ fun LoadableContainer(
     Box(modifier = modifier) {
         content()
         if (isLoading) {
-            Box(modifier = Modifier.fillMaxSize().background(Color.DarkGray.copy(0.5f)).gesturesDisabled(true)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.DarkGray.copy(0.5f))
+                    .gesturesDisabled(true)
+            ) {
                 Column(
                     Modifier
                         .align(Alignment.Center)

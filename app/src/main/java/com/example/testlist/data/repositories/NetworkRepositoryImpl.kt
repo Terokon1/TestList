@@ -10,7 +10,7 @@ class NetworkRepositoryImpl(private val api: ListApi) : NetworkRepository {
     override suspend fun getAnnouncements() = io {
         api.getAnnouncements().result.list.map {
             Announcement(
-                dateTimestamp = it.dateTimestamp.toLocalDate(),
+                date = it.dateTimestamp.toLocalDate(),
                 description = it.description,
                 tags = it.tags,
                 title = it.title,

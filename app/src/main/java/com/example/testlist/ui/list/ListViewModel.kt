@@ -24,29 +24,31 @@ class ListViewModel(private val networkRepository: NetworkRepository) : ViewMode
     val uiState: StateFlow<ListState> = _uiState.asStateFlow()
 
     init {
-        getData()
+        viewModelScope.launch { getData() }
     }
 
     fun update() {
         changeErrorState(false)
-        getData()
+        viewModelScope.launch { getData() }
     }
 
-    private fun getData() {
-        viewModelScope.launch {
-            updateLoaders(1)
-            when (val r = networkRepository.getAnnouncements()) {
-                is Right -> {
-                    _uiState.update { state -> state.copy(announcements = r.v) }
-                }
-
-                is Left -> {
-                    Log.d("ListViewModel", r.v.message ?: "")
-                    changeErrorState(true)
-                }
+    private suspend fun getData() {
+        updateLoaders(1)
+        when (val r = networkRepository.getAnnouncements()) {
+            is Right -> {
+                updateAnnouncements(r.v)
             }
-            updateLoaders(-1)
+
+            is Left -> {
+                Log.d("ListViewModel", r.v.message ?: "")
+                changeErrorState(true)
+            }
         }
+        updateLoaders(-1)
+    }
+
+    private fun updateAnnouncements(value: List<Announcement>) {
+        _uiState.update { state -> state.copy(announcements = value) }
     }
 
     private fun updateLoaders(value: Int) {
@@ -54,7 +56,7 @@ class ListViewModel(private val networkRepository: NetworkRepository) : ViewMode
     }
 
     private fun changeErrorState(value: Boolean) {
-        viewModelScope.launch { _uiState.update { state -> state.copy(error = value) } }
+        _uiState.update { state -> state.copy(error = value) }
     }
 
 }
