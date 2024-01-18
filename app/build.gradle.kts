@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -66,11 +67,20 @@ dependencies {
 
     // Ktor
     val ktor_version = "2.3.7"
+    implementation("io.ktor:ktor-client-core:$ktor_version")
     implementation("io.ktor:ktor-client-android:$ktor_version")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
+    implementation("io.ktor:ktor-client-logging:$ktor_version")
+    implementation("io.ktor:ktor-client-logging-jvm:$ktor_version")
+
+    // Serialization
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
     // Koin for Android
     implementation("io.insert-koin:koin-android:3.5.3")
+    implementation ("io.insert-koin:koin-androidx-compose:3.5.3")
 
 }
